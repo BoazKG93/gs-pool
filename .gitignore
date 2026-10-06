@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+.env
+.DS_Store
+
+# runs, data and models are never tracked
+runs/
+data/
+trainers/*/
+!trainers/pytorch3d_shim/
+*.pt
+*.ply
+*.log
+
+# what runs write: each member's receipt, masks and change PLYs (the published ones are in the data release)
+results/
+
