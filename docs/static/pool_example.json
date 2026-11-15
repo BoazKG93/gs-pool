@@ -1,0 +1,84 @@
+{
+  "member": "Garden_i1, FastPGSR, joint frame, seed 22",
+  "gspool_version": "1.2",
+  "T1": {
+    "objects": 170,
+    "poolable_objects": 126,
+    "changed_objects": 9,
+    "core_threshold": 22.1468,
+    "pool": [
+      {
+        "object_id": 31,
+        "covered_primitives": 534,
+        "extent_primitives": 534,
+        "carrier_ranks": {"colour": 0.9889, "geometry": 0.9993, "photographs": 0.9995, "semantics": 0.9981},
+        "core_statistic": 36.1743,
+        "core_admits": true,
+        "photographs_observing": 25,
+        "hot_view_share": 1.0,
+        "above_median_share": 1.0,
+        "carriers_agree": true,
+        "semantic_exemption": true,
+        "admitted": true,
+        "rejected_by_photographs": false,
+        "changed": true
+      },
+      {
+        "object_id": 82,
+        "covered_primitives": 36,
+        "extent_primitives": 36,
+        "carrier_ranks": {"colour": 0.8679, "geometry": 0.9952, "photographs": 0.5545, "semantics": 0.4205},
+        "core_statistic": 23.2204,
+        "core_admits": true,
+        "photographs_observing": 17,
+        "hot_view_share": 0.1176,
+        "above_median_share": 0.1765,
+        "carriers_agree": true,
+        "semantic_exemption": false,
+        "admitted": true,
+        "rejected_by_photographs": true,
+        "changed": false
+      },
+      {
+        "object_id": 3,
+        "covered_primitives": 8100,
+        "extent_primitives": 3389,
+        "carrier_ranks": {"colour": 0.4059, "geometry": 0.7603, "photographs": 0.7226, "semantics": 0.089},
+        "core_statistic": 3.5916,
+        "core_admits": false,
+        "photographs_observing": 25,
+        "hot_view_share": 0.0,
+        "above_median_share": 0.96,
+        "carriers_agree": false,
+        "semantic_exemption": false,
+        "admitted": false,
+        "rejected_by_photographs": false,
+        "changed": false
+      }
+    ]
+  },
+  "T2": {
+    "objects": 168,
+    "poolable_objects": 125,
+    "changed_objects": 1,
+    "core_threshold": 23.8048,
+    "pool": [
+      {
+        "object_id": 11,
+        "covered_primitives": 413,
+        "extent_primitives": 413,
+        "carrier_ranks": {"colour": 0.9988, "geometry": 0.9999, "photographs": 0.9997, "semantics": 0.981},
+        "core_statistic": 36.431,
+        "core_admits": true,
+        "photographs_observing": 60,
+        "hot_view_share": 1.0,
+        "above_median_share": 1.0,
+        "carriers_agree": true,
+        "semantic_exemption": true,
+        "admitted": true,
+        "rejected_by_photographs": false,
+        "changed": true
+      }
+    ]
+  }
+}

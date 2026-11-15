@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="GS-Pool decides change per object in 3D Gaussian Splatting: the reconstruction proposes a change and the photographs confirm or overrule it.">
+  <meta name="keywords" content="Change detection, 3D Gaussian Splatting, GS-Pool">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GS-Pool: Object-Level Change Detection in 3D Gaussian Splatting</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=balance,close,code,data_object,deployed_code,layers,open_in_full,photo_camera,picture_as_pdf,trending_up">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="data:,">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script type="importmap">{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js"}}</script>
+  <script type="module" src="./static/js/viewer.js?v=13"></script>
+</head>
+<body class="has-navbar-fixed-top">
+<nav class="navbar is-fixed-top site-nav" role="navigation" aria-label="main navigation">
+  <div class="container is-max-desktop">
+    <div class="navbar-brand">
+      <a class="navbar-item site-brand" href="#top">GS-Pool</a>
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+        <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="#videos">Results</a>
+        <a class="navbar-item" href="#abstract">Abstract</a>
+        <a class="navbar-item" href="#highlights">Highlights</a>
+        <a class="navbar-item" href="#method">Method</a>
+        <a class="navbar-item" href="#quantitative">Quantitative</a>
+        <a class="navbar-item" href="#pool">Pool</a>
+        <a class="navbar-item" href="#BibTeX">BibTeX</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<section class="hero hero-top" id="top">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">GS-Pool: Object-Level Change Detection in 3D Gaussian Splatting</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Boaz Keren-Gil,</span>
+            <span class="author-block">James Gain,</span>
+            <span class="author-block">Patrick Marais</span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">University of Cape Town</span>
+          </div>
+
+          <img class="affiliation-banner" src="./assets/banner.png"
+               alt="University of Cape Town, Department of Computer Science, School of IT">
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- The links go live with the release: paper, arXiv, code and data. -->
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-paper" href="https://arxiv.org/pdf/2610.06688" target="_blank" rel="noopener">
+                  <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">picture_as_pdf</span></span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-arxiv" href="https://arxiv.org/abs/2610.06688" target="_blank" rel="noopener">
+                  <span class="icon"><i class="ai ai-arxiv"></i></span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-code" href="https://github.com/BoazKG93/gs-pool" target="_blank" rel="noopener">
+                  <span class="icon"><span class="material-symbols-outlined" aria-hidden="true">code</span></span>
+                  <span>Code</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-data" href="https://huggingface.co/datasets/boazkg/gs-pool-paslcd" target="_blank" rel="noopener">
+                  <span class="icon hf-icon" role="img" aria-label="Hugging Face">&#129303;</span>
+                  <span>PASLCD outputs</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a class="external-link button is-normal is-rounded is-clsplats" href="https://huggingface.co/datasets/boazkg/gs-pool-cl-splats" target="_blank" rel="noopener">
+                  <span class="icon hf-icon" role="img" aria-label="Hugging Face">&#129303;</span>
+                  <span>CL-Splats annotations</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero is-light is-small reveal" id="videos">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3 has-text-centered">Results</h2>
+      <p class="tab-group-label">PASLCD</p>
+      <div class="tabs is-centered is-toggle scene-tabs">
+        <ul>
+          <li class="is-active" data-scene="Zen" data-set="PASLCD"><a>Zen</a></li>
+          <li data-scene="Garden" data-set="PASLCD"><a>Garden</a></li>
+          <li data-scene="Lounge" data-set="PASLCD"><a>Lounge</a></li>
+          <li data-scene="Meeting_room" data-set="PASLCD"><a>Meeting room</a></li>
+          <li data-scene="Cantina" data-set="PASLCD"><a>Cantina</a></li>
+          <li data-scene="Lunch_room" data-set="PASLCD"><a>Lunch room</a></li>
+          <li data-scene="Playground" data-set="PASLCD"><a>Playground</a></li>
+          <li data-scene="Porch" data-set="PASLCD"><a>Porch</a></li>
+          <li data-scene="Pots" data-set="PASLCD"><a>Pots</a></li>
+          <li data-scene="Printing_area" data-set="PASLCD"><a>Printing area</a></li>
+        </ul>
+      </div>
+      <p class="tab-group-label">CL-Splats</p>
+      <div class="tabs is-centered is-toggle scene-tabs">
+        <ul>
+          <li data-scene="cone" data-set="CL-Splats"><a>Cone</a></li>
+          <li data-scene="cupboard" data-set="CL-Splats"><a>Cupboard</a></li>
+          <li data-scene="desk" data-set="CL-Splats"><a>Desk</a></li>
+          <li data-scene="room" data-set="CL-Splats"><a>Room</a></li>
+          <li data-scene="shelf" data-set="CL-Splats"><a>Shelf</a></li>
+        </ul>
+      </div>
+      <div class="scroll-x flight-scroll">
+        <video id="flight" poster="./static/videos/flight_Zen.jpg" autoplay muted loop playsinline disablepictureinpicture height="100%">
+        <source src="./static/videos/flight_Zen.mp4" type="video/mp4">
+      </video>
+      </div>
+      <p class="caption has-text-centered">
+        The <i>T</i><sub>1</sub> and <i>T</i><sub>2</sub> reconstructions, and their changed primitives, red for <i>T</i><sub>1</sub>
+        and blue for <i>T</i><sub>2</sub>, over <i>T</i><sub>1</sub> in grey. <span id="flight-note">PASLCD, FastPGSR, seed 22.</span>
+      
+      </p>
+      <p class="swipe-hint">Swipe the video sideways to see all three panels.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" id="abstract">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Many physical spaces require photographic monitoring of changes to their structure over time. When each visit is reconstructed with
+            3D Gaussian Splatting (3DGS), a direct comparison of the two reconstructions cannot answer this because training is stochastic and
+            two reconstructions of an unchanged space never coincide. To address this, we propose GS-Pool, which takes two independently
+            reconstructed Gaussian scans of the same space and returns the changed objects in each, together with their change masks. Our
+            method begins by extracting SAM2 masks from the photographs of each visit. These are then lifted onto the Gaussians that render
+            them and merged into an <i>object pool</i>, a collection of 3D objects, so every decision is taken once per object in 3D. We
+            introduce a novel <i>photographic carrier</i> approach, which co-opts the existing 3DGS mechanism. It does so by applying the
+            photographs of the other visit and back-propagating them to the Gaussians that rendered each pixel. We combine this with GS-Diff's
+            geometry and colour terms and our distilled DINOv3 features. This evidence is compared with objects identified as unchanged in both
+            visits to set a change threshold for each scene.
+          </p>
+          <p>
+            On the PASLCD benchmark, GS-Pool achieves mIoU/F1 scores of 0.75/0.85 against 0.64/0.76 for GS-Diff, the strongest offline method
+            for detecting change in 3DGS. Finally, we return each changed object as a set of Gaussians, which can be inspected in 3D.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<section class="hero teaser reveal">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="fig-wide">
+        <img class="page-figure" src="./static/images/teaser.jpg"
+           alt="Changes detected by GS-Pool on Meeting room: the changed primitives in red in the T1 reconstruction and in blue in the T2 reconstruction">
+      </div>
+      <div class="fig-stack fig-teaser" role="img" aria-label="Changes detected by GS-Pool on Meeting room: the changed primitives in red in the T1 reconstruction and in blue in the T2 reconstruction">
+        <img src="./static/images/teaser_a.jpg" alt="">
+        <img src="./static/images/teaser_b.jpg" alt="">
+      </div>
+      <p class="caption">
+        Changes detected by GS-Pool in two independently reconstructed visits, in red in <i>T</i><sub>1</sub> (left) and blue in <i>T</i><sub>2</sub> (right).
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="highlights" id="highlights">
+  <div class="container is-max-desktop">
+    <h2 class="hl-heading reveal">Highlights</h2>
+    <div class="hl-grid reveal">
+      <article class="hl-item" style="--i:0">
+        <div class="hl-top"><span class="hl-num">01</span><span class="material-symbols-outlined hl-ico" aria-hidden="true">deployed_code</span></div>
+        <h3>Decisions per object</h3>
+        <p>SAM2 masks of each visit's photographs are lifted onto the Gaussians that render them and merged into an object pool, so every decision is taken once per object in 3D.</p>
+      </article>
+      <article class="hl-item" style="--i:1">
+        <div class="hl-top"><span class="hl-num">02</span><span class="material-symbols-outlined hl-ico" aria-hidden="true">photo_camera</span></div>
+        <h3>The photographs as evidence</h3>
+        <p>The 3DGS training loss of each input reconstruction against the other visit's photographs, backpropagated to the Gaussians that rendered each pixel.</p>
+      </article>
+      <article class="hl-item" style="--i:2">
+        <div class="hl-top"><span class="hl-num">03</span><span class="material-symbols-outlined hl-ico" aria-hidden="true">balance</span></div>
+        <h3>A null drawn from the scene</h3>
+        <p>This evidence is compared with that of the objects present in both visits, which sets a change threshold for each scene.</p>
+      </article>
+      <article class="hl-item is-hero is-wide" style="--i:3">
+        <div class="hl-top"><span class="hl-num">04</span><span class="material-symbols-outlined hl-ico" aria-hidden="true">trending_up</span></div>
+        <h3>State of the art on PASLCD</h3><span class="hl-badge">+17% mIoU</span>
+        <p>0.751 mIoU and 0.846 F1 on PASLCD, against 0.644 and 0.758 for GS-Diff, the strongest offline method. Each of the six per-seed means of the two trainers clears every prior result.</p>
+      </article>
+      <article class="hl-item is-hero is-wide" style="--i:4">
+        <div class="hl-top"><span class="hl-num">05</span><span class="material-symbols-outlined hl-ico" aria-hidden="true">layers</span></div>
+        <h3>Change masks for CL-Splats</h3><span class="hl-badge">0.855 mIoU</span>
+        <p>CL-Splats has no change masks for its five real scenes. We annotate them in PASLCD's convention, and GS-Pool reaches 0.855 mIoU on them.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" id="method">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method</h2>
+        <div class="fig-zoom">
+          <img class="page-figure" src="./static/images/pipeline.png" alt="The GS-Pool method: two visits, the distilled semantic field, the object pool, four carriers per primitive, one decision per object, and the changed primitives and masks">
+          <button class="fig-enlarge" type="button" data-lightbox="pipeline-lightbox" aria-label="Enlarge the method figure">
+            <span class="material-symbols-outlined" aria-hidden="true">open_in_full</span><span>Enlarge</span>
+          </button>
+        </div>
+        <dialog class="fig-lightbox" id="pipeline-lightbox" aria-label="The GS-Pool method, full size">
+          <button class="lb-close" type="button" aria-label="Close"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+          <div class="lb-scroll"><img src="./static/images/pipeline.png" alt="The GS-Pool method: two visits, the distilled semantic field, the object pool, four carriers per primitive, one decision per object, and the changed primitives and masks"></div>
+        </dialog>
+        <p class="caption">
+          The GS-Pool method. Per-primitive carriers, C/G/P/S for colour, geometry, photographs and semantics, are pooled per 3D object,
+          compared with the other visit's unchanged objects and checked against its photographs, giving the changed primitives and their masks.
+        </p>
+        <div class="content has-text-justified">
+          <p>
+            Two reconstructions of the same unchanged space never coincide, because 3DGS training is stochastic and each visit is photographed
+            along a different camera path. This difference is termed <i>drift</i>, as in GS-Diff. A difference computed between the two
+            reconstructions therefore contains both actual change and drift. The photographs, unlike the reconstructions, contain no drift.
+            GS-Pool therefore proposes candidate changes from the reconstructions and uses the photographs of the second visit to confirm or
+            reject them. A different object in the same place can remain undetected with geometry and colour alone, so we also distill a
+            <i>semantic field</i>, generated from a foundation model, into the primitives. We keep three components of GS-Diff unchanged: its
+            drift model, its geometry and colour kernels, and its observability weight. We contribute:
+          </p>
+          <ul>
+            <li>an <i>object pool</i>: we lift SAM2 segmentation masks of each visit's photographs onto the primitives that render them and
+              merge them across views into objects, so that evidence is aggregated and decided once per object instead of once per primitive;</li>
+            <li>a <i>photographic carrier</i>: we compute the 3DGS training loss of each input reconstruction against the <i>other</i> visit's
+              photographs and backpropagate it through the rasteriser to the primitives that rendered each pixel;</li>
+            <li>a per-scene change threshold: we compare each object's evidence with that of the objects present in both visits, which form an
+              empirical <i>null</i> distribution of unchanged objects;</li>
+            <li>change annotations for the five real scenes of CL-Splats, which has no change masks, following the PASLCD convention.</li>
+          </ul>
+        </div>
+
+        <h3 class="title is-4">The photographic carrier</h3>
+        <div class="columns is-vcentered">
+          <div class="column is-6"><img src="./static/images/photo_carrier.png" alt="A glass emptied in place: the two visits, the geometric, colour, semantic and photographic rank maps with the glass's pooled ranks, GS-Pool's mask and the annotation"></div>
+          <div class="column is-6 content has-text-justified">
+            <p>
+              The figure shows why the carrier is needed. A glass emptied in place keeps its shape and its position, so geometry and colour,
+              which compare the two reconstructions with each other, cannot separate it from drift, while the photographic carrier still ranks
+              it near the top.
+            </p>
+            <p>
+              Because this loss is backpropagated to the primitives, it is aggregated per object and weighed against the other carriers, which a
+              2D change map cannot do. MV&#8209;3DCD, which compares each view in 2D before fusing, scores 36% below GS-Pool on PASLCD. On its
+              own, the photographic carrier reaches 62% of the full method's score on FastPGSR, and removing it costs 13.0% on FastPGSR and 20.3%
+              on vanilla 3DGS, the largest loss of any carrier.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" id="quantitative">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Quantitative results</h2>
+
+        <h3 class="title is-4">PASLCD</h3>
+        <div class="table-container">
+          <table class="table is-hoverable is-fullwidth results">
+            <thead><tr><th>Method</th><th class="has-text-right">mIoU</th><th class="has-text-right">F1</th></tr></thead>
+            <tbody>
+              <tr class="ours"><td>GS-Pool (FastPGSR)</td><td class="has-text-right"><strong>0.751</strong><small> &plusmn;0.010</small></td><td class="has-text-right"><strong>0.846</strong><small> &plusmn;0.008</small></td></tr>
+              <tr class="ours"><td>GS-Pool (vanilla 3DGS)</td><td class="has-text-right">0.718<small> &plusmn;0.007</small></td><td class="has-text-right">0.820<small> &plusmn;0.005</small></td></tr>
+              <tr><td>LEGO-SCD (online)</td><td class="has-text-right">0.676</td><td class="has-text-right">0.789</td></tr>
+              <tr><td>GS-Diff</td><td class="has-text-right">0.644</td><td class="has-text-right">0.758</td></tr>
+              <tr><td>O-SCD++ (online)</td><td class="has-text-right">0.602</td><td class="has-text-right">0.741</td></tr>
+              <tr><td>O-SCD (online)</td><td class="has-text-right">0.552</td><td class="has-text-right">0.694</td></tr>
+              <tr><td>PlenoCI</td><td class="has-text-right">0.538</td><td class="has-text-right">0.688</td></tr>
+              <tr><td>MV-3DCD</td><td class="has-text-right">0.478</td><td class="has-text-right">0.628</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">
+          20 instances, ten scenes with two each, and 25 annotated test views per instance. GS-Pool is the mean &plusmn; standard deviation
+          over three seeds, in the benchmark's joint camera frame. Baselines are as published by their authors. With the second capture
+          registered into the fixed poses of the first, so that the two reconstructions are fully independent, GS-Pool reaches 0.727 mIoU on
+          FastPGSR and 0.725 on vanilla 3DGS.
+        </p>
+
+        <h3 class="title is-4">CL-Splats</h3>
+        <div class="table-container">
+          <table class="table is-hoverable is-fullwidth results">
+            <thead><tr><th>Method</th><th class="has-text-right">mIoU</th><th class="has-text-right">F1</th></tr></thead>
+            <tbody>
+              <tr><td>PlenoCI</td><td class="has-text-right">0.951</td><td class="has-text-right">0.975</td></tr>
+              <tr class="ours"><td>GS-Pool (vanilla 3DGS)</td><td class="has-text-right">0.871<small> &plusmn;0.017</small></td><td class="has-text-right">0.927<small> &plusmn;0.011</small></td></tr>
+              <tr class="ours"><td>GS-Pool (FastPGSR)</td><td class="has-text-right">0.855<small> &plusmn;0.018</small></td><td class="has-text-right">0.912<small> &plusmn;0.017</small></td></tr>
+              <tr><td>O-SCD (online)</td><td class="has-text-right">0.756</td><td class="has-text-right">0.845</td></tr>
+              <tr><td>GS-Diff</td><td class="has-text-right">0.724</td><td class="has-text-right">0.829</td></tr>
+              <tr><td>MV-3DCD</td><td class="has-text-right">0.634</td><td class="has-text-right">0.752</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">
+          CL-Splats releases no change masks for its real scenes, so we annotated its 29 evaluation views in PASLCD's convention and score
+          GS-Pool on them, as the mean &plusmn; standard deviation over three seeds. The baselines are as reported by PlenoCI on its own
+          annotations. On our masks MV-3DCD scores 0.641, close to the 0.634 reported for it, which suggests that the two annotations are
+          comparable.
+        </p>
+
+        <h3 class="title is-4">Ablation</h3>
+        <div class="table-container">
+          <table class="table is-hoverable is-fullwidth results">
+            <thead><tr><th>Row</th><th>Decision</th><th class="has-text-right">FastPGSR mIoU</th><th class="has-text-right">vanilla 3DGS mIoU</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>photographs alone</td><td class="has-text-right">0.468</td><td class="has-text-right">0.435</td></tr>
+              <tr><td>2</td><td>+ semantics</td><td class="has-text-right">0.590</td><td class="has-text-right">0.606</td></tr>
+              <tr><td>3</td><td>all four carriers</td><td class="has-text-right">0.609</td><td class="has-text-right">0.611</td></tr>
+              <tr><td>4</td><td>core, <i>F</i>(<i>o</i>) &gt; &theta;</td><td class="has-text-right">0.703</td><td class="has-text-right">0.662</td></tr>
+              <tr><td>5</td><td>core + hot recovery</td><td class="has-text-right">0.738</td><td class="has-text-right">0.713</td></tr>
+              <tr><td>6</td><td>core + confirmation, without hot recovery</td><td class="has-text-right">0.713</td><td class="has-text-right">0.665</td></tr>
+              <tr class="ours"><td>7</td><td>full decision</td><td class="has-text-right"><strong>0.751</strong></td><td class="has-text-right"><strong>0.718</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="caption">The decision rule built up one component at a time on the same pools and carriers. Mean over the 60 joint-frame members per trainer. Row 7 is the full rule.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" id="pool">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">The output is the pool</h2>
+        <div class="viewer-card">
+          <div id="splat-view" class="is-loading" tabindex="0" aria-label="3D view of Porch"><span class="viewer-hint">Loading the 3D scene</span></div>
+          <div class="viewer-ui">
+            <div class="viewer-group" role="group" aria-label="Scene"><span>Scene</span>
+              <button type="button" class="is-active" data-scene="T1">T<sub>1</sub></button>
+              <button type="button" data-scene="T2">T<sub>2</sub></button>
+              <button type="button" data-scene="none">None</button>
+            </div>
+            <div class="viewer-group" role="group" aria-label="Change masks"><span>Masks</span>
+              <button type="button" data-mask="T1" aria-pressed="true"><i class="dot is-red"></i>T<sub>1</sub> changes</button>
+              <button type="button" data-mask="T2" aria-pressed="true"><i class="dot is-blue"></i>T<sub>2</sub> changes</button>
+            </div>
+            <span class="viewer-help viewer-help-desktop">Drag to orbit &middot; scroll to zoom &middot; right-drag to pan &middot; W A S D or arrows to fly &middot; Q and E down and up</span>
+            <span class="viewer-help viewer-help-touch">Drag to orbit, pinch to zoom, two fingers to pan</span>
+          </div>
+        </div>
+        <noscript><img class="page-figure" src="./static/images/output3d.png" alt="Porch: each visit's changed primitives on its own reconstruction"></noscript>
+        <p class="caption">
+          Porch from a viewpoint no camera took. The scene is either reconstruction, and each mask is the changed primitives of one visit and nothing else: the pipeline's change layer, red for what left
+          <i>T</i><sub>1</sub> and, repainted here, blue for what arrived in <i>T</i><sub>2</sub>. A mask can sit on a scene or stand alone.
+        </p>
+        <div class="content has-text-justified">
+          <p>
+            Every visit is returned as a pool of objects in 3D, each with its decision, its photographic evidence and its changed primitives.
+            Change detection becomes a question about each object, and opens the next one: what kind of change each object underwent.
+          </p>
+          <h3 class="title is-4">What a pool looks like</h3>
+          <p>
+            Each member writes its pool record, <code>pool.json</code>, beside its decision trace: per visit the object counts and the core's bar
+            <code>core_threshold</code>, and per poolable object every quantity its decision reads. The listing abridges one member's record,
+            Garden, to three objects of <i>T</i><sub>1</sub> and the one changed object of <i>T</i><sub>2</sub>
+            (<a href="./static/pool_example.json"><code>pool_example.json</code></a>), values rounded to four places. The pool lists only the objects the rule judges; the background is left out.
+          </p>
+        </div>
+        <div class="ide">
+          <div class="ide-bar">
+            <span class="ide-dots"><i></i><i></i><i></i></span>
+            <span class="ide-tab"><span class="material-symbols-outlined ide-ico" aria-hidden="true">data_object</span> pool.json</span>
+            <button class="ide-copy" type="button" aria-label="Copy pool.json">Copy</button>
+          </div>
+          <pre class="pool"><code id="pool-json">{
+  &quot;member&quot;: &quot;Garden_i1, FastPGSR, joint frame, seed 22&quot;,
+  &quot;gspool_version&quot;: &quot;1.2&quot;,
+  &quot;T1&quot;: {
+    &quot;objects&quot;: 170,
+    &quot;poolable_objects&quot;: 126,
+    &quot;changed_objects&quot;: 9,
+    &quot;core_threshold&quot;: 22.1468,
+    &quot;pool&quot;: [
+      {
+        &quot;object_id&quot;: 31,
+        &quot;covered_primitives&quot;: 534,
+        &quot;extent_primitives&quot;: 534,
+        &quot;carrier_ranks&quot;: {&quot;colour&quot;: 0.9889, &quot;geometry&quot;: 0.9993, &quot;photographs&quot;: 0.9995, &quot;semantics&quot;: 0.9981},
+        &quot;core_statistic&quot;: 36.1743,
+        &quot;core_admits&quot;: true,
+        &quot;photographs_observing&quot;: 25,
+        &quot;hot_view_share&quot;: 1.0,
+        &quot;above_median_share&quot;: 1.0,
+        &quot;carriers_agree&quot;: true,
+        &quot;semantic_exemption&quot;: true,
+        &quot;admitted&quot;: true,
+        &quot;rejected_by_photographs&quot;: false,
+        &quot;changed&quot;: true
+      },
+      {
+        &quot;object_id&quot;: 82,
+        &quot;covered_primitives&quot;: 36,
+        &quot;extent_primitives&quot;: 36,
+        &quot;carrier_ranks&quot;: {&quot;colour&quot;: 0.8679, &quot;geometry&quot;: 0.9952, &quot;photographs&quot;: 0.5545, &quot;semantics&quot;: 0.4205},
+        &quot;core_statistic&quot;: 23.2204,
+        &quot;core_admits&quot;: true,
+        &quot;photographs_observing&quot;: 17,
+        &quot;hot_view_share&quot;: 0.1176,
+        &quot;above_median_share&quot;: 0.1765,
+        &quot;carriers_agree&quot;: true,
+        &quot;semantic_exemption&quot;: false,
+        &quot;admitted&quot;: true,
+        &quot;rejected_by_photographs&quot;: true,
+        &quot;changed&quot;: false
+      },
+      {
+        &quot;object_id&quot;: 3,
+        &quot;covered_primitives&quot;: 8100,
+        &quot;extent_primitives&quot;: 3389,
+        &quot;carrier_ranks&quot;: {&quot;colour&quot;: 0.4059, &quot;geometry&quot;: 0.7603, &quot;photographs&quot;: 0.7226, &quot;semantics&quot;: 0.089},
+        &quot;core_statistic&quot;: 3.5916,
+        &quot;core_admits&quot;: false,
+        &quot;photographs_observing&quot;: 25,
+        &quot;hot_view_share&quot;: 0.0,
+        &quot;above_median_share&quot;: 0.96,
+        &quot;carriers_agree&quot;: false,
+        &quot;semantic_exemption&quot;: false,
+        &quot;admitted&quot;: false,
+        &quot;rejected_by_photographs&quot;: false,
+        &quot;changed&quot;: false
+      }
+    ]
+  },
+  &quot;T2&quot;: {
+    &quot;objects&quot;: 168,
+    &quot;poolable_objects&quot;: 125,
+    &quot;changed_objects&quot;: 1,
+    &quot;core_threshold&quot;: 23.8048,
+    &quot;pool&quot;: [
+      {
+        &quot;object_id&quot;: 11,
+        &quot;covered_primitives&quot;: 413,
+        &quot;extent_primitives&quot;: 413,
+        &quot;carrier_ranks&quot;: {&quot;colour&quot;: 0.9988, &quot;geometry&quot;: 0.9999, &quot;photographs&quot;: 0.9997, &quot;semantics&quot;: 0.981},
+        &quot;core_statistic&quot;: 36.431,
+        &quot;core_admits&quot;: true,
+        &quot;photographs_observing&quot;: 60,
+        &quot;hot_view_share&quot;: 1.0,
+        &quot;above_median_share&quot;: 1.0,
+        &quot;carriers_agree&quot;: true,
+        &quot;semantic_exemption&quot;: true,
+        &quot;admitted&quot;: true,
+        &quot;rejected_by_photographs&quot;: false,
+        &quot;changed&quot;: true
+      }
+    ]
+  }
+}</code></pre>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            <code>covered_primitives</code> is the object's primitives inside at least two camera frusta of the other visit,
+            <code>carrier_ranks</code> its four ranks against the scene's null, <code>core_statistic</code> the core's statistic against the bar,
+            <code>photographs_observing</code> the number of photographs that observe the object, <code>hot_view_share</code> and
+            <code>above_median_share</code> its two photographic shares, <code>carriers_agree</code> the quorum, <code>rejected_by_photographs</code>
+            the photographs' overrule, and <code>extent_primitives</code> the primitives a changed object paints.
+          </p>
+          <ul>
+            <li><strong>31</strong> (<i>T</i><sub>1</sub>) passes every clause. Changed.</li>
+            <li><strong>82</strong> (<i>T</i><sub>1</sub>) is a plant saucer. It clears the bar narrowly, 23.2 against 22.1, but it is hot in
+              2 of the 17 photographs that observe it and above the median object in 3, so the photographs reject it. Not changed.</li>
+            <li><strong>3</strong> (<i>T</i><sub>1</sub>) stays far below the bar, 3.6, and two of its ranks fall below &frac12;. Not changed.</li>
+            <li><strong>11</strong> (<i>T</i><sub>2</sub>) is the bottle that arrived, the one changed object of <i>T</i><sub>2</sub>. Changed.</li>
+          </ul>
+          <p>
+            Beside it the release keeps the pool as arrays, <code>pool_T1.npz</code> and <code>pool_T2.npz</code> (each primitive's object), and the changed
+            primitives as PLY layers.
+          </p>
+          <h3 class="title is-4">Limitations</h3>
+          <p>
+            GS-Pool takes all its evidence from the reconstructions and photographs, so a poor capture degrades results. GS-Pool depends on
+            SAM2 for its objects, so a change that SAM2 does not segment as a separate mask cannot be recovered by later stages. A change of
+            lighting alone can still produce false alarms. However, on two captures of an unchanged scene under different lighting, GS-Pool
+            flags fewer pixels than MV&#8209;3DCD and O&#8209;SCD, which we ran from their released code. The distilled field, SAM2 lifting and
+            renders at the other visit's cameras also make GS-Pool costlier in time than comparing the two primitive sets alone. With the
+            distilled fields and SAM2 masks precomputed, one member takes a median 2.1 minutes with FastPGSR and 5.7 minutes with vanilla 3DGS,
+            on one RTX 4090 with 24&nbsp;GB.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section reveal" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{kerengil2026gspool,
+  title   = {GS-Pool: Object-Level Change Detection in 3D Gaussian Splatting},
+  author  = {Keren-Gil, Boaz and Gain, James and Marais, Patrick},
+  journal = {arXiv preprint arXiv:2610.06688},
+  year    = {2026}
+}</code></pre>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>. It is built from the
+            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies project page</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
